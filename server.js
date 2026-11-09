@@ -13,6 +13,7 @@ function body(req,max=8*1024*1024){return new Promise((resolve,reject)=>{let b='
 let attempts=new Map();
 http.createServer(async(req,res)=>{let u=new URL(req.url,'http://localhost');try{
 if(req.method==='GET'&&(u.pathname==='/'||u.pathname==='/index.html')){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return fs.createReadStream(path.join(root,'index.html')).pipe(res)}
+if(req.method==='GET'&&['/chi-siamo/','/soluzioni/','/noleggio/'].includes(u.pathname)){let pages=JSON.parse(fs.readFileSync(path.join(root,'pages.json'),'utf8'));res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end(pages[u.pathname])}
 if(req.method==='GET'&&u.pathname==='/admin'){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Frame-Options':'DENY'});return fs.createReadStream(path.join(root,'admin.html')).pipe(res)}
 if(req.method==='GET'&&u.pathname==='/case-history/'){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return fs.createReadStream(path.join(root,'cases.html')).pipe(res)}
 if(req.method==='GET'&&u.pathname==='/api/cases')return json(res,200,read().filter(x=>x.published));
