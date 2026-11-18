@@ -16,7 +16,7 @@ const addArcadeNav=html=>{
  const item='<li class="mega-menu-item nav-item menu-item-depth-0">'+link+'</li>';
  html=html.replace(/(<li\b[^>]*>\s*<a\b[^>]*href=["']https:\/\/rentalsim-production\.up\.railway\.app\/["'][^>]*>[\s\S]*?<\/a>\s*<\/li>)/gi, '$1'+item);
  html=html.replace(/(<a\b[^>]*class=["']rentalsim-link["'][^>]*href=["']https:\/\/rentalsim-production\.up\.railway\.app\/["'][^>]*>[\s\S]*?<\/a>)(?!\s*<\/li>)/gi,'$1<a class="rentalsim-link" href="https://arcade-story-production.up.railway.app/">Noleggio arcade<span class="rentalsim-new">NEW</span></a>');
- return html.replace('</head>','<style>@media(min-width:1201px){#menu-primary>li>a{font-size:13px!important;padding-left:6px!important;padding-right:6px!important}}@media(max-width:600px){header>div{flex-wrap:wrap}}</style></head>');
+ return html.replace('</head>','<style>@media(min-width:1201px){#menu-primary>li>a{font-size:15px!important;padding-left:5px!important;padding-right:5px!important}}@media(min-width:1201px) and (max-width:1450px){#menu-primary>li>a{font-size:14px!important;padding-left:4px!important;padding-right:4px!important}}@media(max-width:600px){header>div{flex-wrap:wrap}}</style></head>');
 };
 const previewHtml=html=>addArcadeNav(html).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,tag=>/iubenda|googletagmanager|\bgtag\s*\(/i.test(tag)?'':tag);
 let attempts=new Map();
