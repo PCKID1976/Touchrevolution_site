@@ -18,9 +18,18 @@ const addArcadeNav=html=>{
  html=html.replace(/(<a\b[^>]*class=["']rentalsim-link["'][^>]*href=["']https:\/\/rentalsim-production\.up\.railway\.app\/["'][^>]*>[\s\S]*?<\/a>)(?!\s*<\/li>)/gi,'$1<a class="rentalsim-link" href="https://arcade-story-production.up.railway.app/">Noleggio arcade<span class="rentalsim-new">NEW</span></a>');
  return html.replace('</head>','<style>@media(min-width:1201px){#menu-primary>li>a{font-size:15px!important;padding-left:5px!important;padding-right:5px!important}}@media(min-width:1201px) and (max-width:1450px){#menu-primary>li>a{font-size:14px!important;padding-left:4px!important;padding-right:4px!important}}@media(max-width:600px){header>div{flex-wrap:wrap}}</style></head>');
 };
-const previewHtml=html=>addArcadeNav(html).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,tag=>/iubenda|googletagmanager|\bgtag\s*\(/i.test(tag)?'':tag);
+const addPhotoboothNav=html=>{
+ const link='<a class="menu-link -undash -unlink main-menu-link item-title rentalsim-link" href="/photobooth/"><span>Photobooth</span><span class="rentalsim-new">NEW</span></a>';
+ const item='<li class="mega-menu-item nav-item menu-item-depth-0">'+link+'</li>';
+ html=html.replace(/(<li\b[^>]*>\s*<a\b[^>]*href=["']https:\/\/arcade-story-production\.up\.railway\.app\/["'][^>]*>[\s\S]*?<\/a>\s*<\/li>)/gi,'$1'+item);
+ html=html.replace(/(<a\b[^>]*class=["']rentalsim-link["'][^>]*href=["']https:\/\/arcade-story-production\.up\.railway\.app\/["'][^>]*>[\s\S]*?<\/a>)(?!\s*<\/li>)/gi,'$1<a class="rentalsim-link" href="/photobooth/">Photobooth<span class="rentalsim-new">NEW</span></a>');
+ return html.replace('</head>','<style>@media(min-width:1201px) and (max-width:1550px){#menu-primary>li>a{font-size:13px!important;padding-left:4px!important;padding-right:4px!important}}</style></head>');
+};
+const previewHtml=html=>addPhotoboothNav(addArcadeNav(html)).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,tag=>/iubenda|googletagmanager|\bgtag\s*\(/i.test(tag)?'':tag);
 let attempts=new Map();
 http.createServer(async(req,res)=>{let u=new URL(req.url,'http://localhost');try{
+if(req.method==='GET'&&(u.pathname==='/photobooth/'||u.pathname==='/photobooth')){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end(fs.readFileSync(path.join(root,'photobooth','index.html'),'utf8'))}
+if(req.method==='GET'&&/^\/photobooth\/(hero|base|medium|pro|spin)\.webp$/.test(u.pathname)){res.writeHead(200,{'Content-Type':'image/webp','Cache-Control':'public, max-age=86400','X-Content-Type-Options':'nosniff'});return fs.createReadStream(path.join(root,'photobooth',path.basename(u.pathname))).pipe(res)}
 if(req.method==='GET'&&(u.pathname==='/'||u.pathname==='/index.html')){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end(previewHtml(fs.readFileSync(path.join(root,'index.html'),'utf8')))}
 if(req.method==='GET'&&(u.pathname==='/mercati/'||/^\/mercati\/[a-z0-9-]+\/$/.test(u.pathname))){let pages=JSON.parse(require('zlib').gunzipSync(fs.readFileSync(path.join(root,'market-pages.json.gz'))));if(pages[u.pathname]){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end(previewHtml(addSimulatorNav(pages[u.pathname])))}}
 if(req.method==='GET'&&['/chi-siamo/','/soluzioni/','/noleggio/','/mercati/','/contatti/','/prodotti/'].includes(u.pathname)){let pages=JSON.parse(fs.readFileSync(path.join(root,'pages.json'),'utf8'));res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end(previewHtml(pages[u.pathname]))}
